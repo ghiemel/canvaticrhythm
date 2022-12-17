@@ -1152,6 +1152,7 @@ document.onkeydown = function(evt) {
             }
         }
     
+        console.log(TargTime)
         if (Target != null && TargTime < 150) {    
             for (let jud in Judgements) {
                 if (TargTime < Judgements[jud][2]) {
