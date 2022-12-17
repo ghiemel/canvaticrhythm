@@ -1217,6 +1217,7 @@ document.onkeyup = function(evt) {
 
 setInterval(function() {
     drawShape(0, 0, Canvas.width, Canvas.height, "Rectangle", "#000000")
+    console.log(Menu)
 
     if (Menu == "Song") {
         var ANotesPassed = Math.max(0, NotesPassed)
