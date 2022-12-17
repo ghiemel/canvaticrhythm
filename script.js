@@ -1219,6 +1219,7 @@ setInterval(function() {
     drawShape(0, 0, Canvas.width, Canvas.height, "Rectangle", "#000000")
     Canvas.width = window.innerWidth
     Canvas.height = window.innerHeight
+    createText(Menu, "left", "#ffffff", 10, 35, 50)
 
     if (Menu == "Song") {
         var ANotesPassed = Math.max(0, NotesPassed)
