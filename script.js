@@ -1,6 +1,7 @@
 var Canvas = document.getElementById("myCanvas");
 var Context = Canvas.getContext("2d");
 var Song = "Shinsekai"
+var Menu = "End"
 
 // Music
 var Music = new Audio(`./Sounds/${Song}.mp3`)
@@ -1123,6 +1124,10 @@ function spawnJudgement(Name, Stats) {
     }
 }
 
+Music.onended = function(evt) {
+   Menu = "End" 
+}
+
 var DownKeys = []
 document.onkeydown = function(evt) {
     event = evt || window.event;
@@ -1152,7 +1157,6 @@ document.onkeydown = function(evt) {
             }
         }
     
-        console.log(TargTime)
         if (Target != null && TargTime < 150) {    
             for (let jud in Judgements) {
                 if (TargTime < Judgements[jud][2]) {
@@ -1172,8 +1176,6 @@ document.onkeydown = function(evt) {
 
                 spawnJudgement(JudI)
             }
-        } else {
-            spawnJudgement("Miss")
         }
     }
 };
@@ -1214,98 +1216,103 @@ document.onkeyup = function(evt) {
 }
 
 setInterval(function() {
-    var ANotesPassed = Math.max(0, NotesPassed)
-
-    Canvas.width = window.innerWidth
-    Canvas.height = window.innerHeight
-
     drawShape(0, 0, Canvas.width, Canvas.height, "Rectangle", "#000000")
-    drawShape(Canvas.width, 0, -300, 125, "Triangle", "#888888", "#333333")
-    drawShape(Canvas.width / 2 - 325, 0, 650, Canvas.height, "Rectangle", "#222222")
 
-    for (var i = 1; i < 5; i++) {
-        drawShape(Canvas.width / 2 + (i * 140 - 350), Canvas.height - 150, 60, 0, "Circle", "#ffffff")
-    }
+    if (Menu == "Song") {
+        var ANotesPassed = Math.max(0, NotesPassed)
 
-    for (let notei = ANotesPassed; notei < ANotesPassed + 150; notei++) {
-        if (notei < Chart.length) {
-            // Run functions
-            var Note = Chart[notei]
-            if (Note[2] != undefined) {
-                if (Note[3] != undefined) {
-                    var Distance = Math.abs(Time - Note[0])
-                    Note[2] -= Distance
-                    Note[0] = Time
-                    Score += (Combo + 1) * Music.playbackRate
-
-                    HoldTicks -= Music.playbackRate
-                    if (HoldTicks <= 0) {
-                        spawnJudgement("RExact", false)
-                        Combo += 1
-                        ComboAnim = 65
-
-                        HoldTicks += 10
-                    }
-
-                    if (Note[2] < 0) {
-                        spawnJudgement("RExact")
-                        Note[0] = undefined
-                        Note[1] = undefined
-                        Note[2] = undefined
-                        Note[3] = undefined
-
-                        NotesPassed += 1
+        Canvas.width = window.innerWidth
+        Canvas.height = window.innerHeight
+    
+        drawShape(Canvas.width, 0, -300, 125, "Triangle", "#888888", "#333333")
+        drawShape(Canvas.width / 2 - 325, 0, 650, Canvas.height, "Rectangle", "#222222")
+    
+        for (var i = 1; i < 5; i++) {
+            drawShape(Canvas.width / 2 + (i * 140 - 350), Canvas.height - 150, 60, 0, "Circle", "#ffffff")
+        }
+    
+        for (let notei = ANotesPassed; notei < ANotesPassed + 150; notei++) {
+            if (notei < Chart.length) {
+                // Run functions
+                var Note = Chart[notei]
+                if (Note[2] != undefined) {
+                    if (Note[3] != undefined) {
+                        var Distance = Math.abs(Time - Note[0])
+                        Note[2] -= Distance
+                        Note[0] = Time
+                        Score += (Combo + 1) * Music.playbackRate
+    
+                        HoldTicks -= Music.playbackRate
+                        if (HoldTicks <= 0) {
+                            spawnJudgement("RExact", false)
+                            Combo += 1
+                            ComboAnim = 65
+    
+                            HoldTicks += 10
+                        }
+    
+                        if (Note[2] < 0) {
+                            spawnJudgement("RExact")
+                            Note[0] = undefined
+                            Note[1] = undefined
+                            Note[2] = undefined
+                            Note[3] = undefined
+    
+                            NotesPassed += 1
+                        }
                     }
                 }
-            }
-            drawShape(Canvas.width / 2 + (Note[1] * 140 - 350), ((Time - Note[0]) * 1.75) + (Canvas.height - 150), 60, 0, "Circle", "#888888")
-
-            // Draw Shapes
-            if (Note[2] != undefined) {
-                drawShape(Canvas.width / 2 + (Note[1] * 140 - 350), ((Time - Note[0]) * 1.75) - (Note[2] * 1.75) + (Canvas.height - 150), 60, 0, "Circle", "#888888")
-                drawShape(Canvas.width / 2 + (Note[1] * 140 - 410),((Time - Note[0]) * 1.75) - (Note[2] * 1.75) + (Canvas.height - 150) , 120, (Note[2] * 1.75), "Rectangle", "#888888")
-            }
-
-            // Miss function
-            if (Note[0] - Time < -175) {
-                spawnJudgement("Miss")
-
-                Note[0] = undefined
-                Note[1] = undefined
-                Note[2] = undefined
-                Note[3] = undefined
-
-                NotesPassed += 1
+                drawShape(Canvas.width / 2 + (Note[1] * 140 - 350), ((Time - Note[0]) * 1.75) + (Canvas.height - 150), 60, 0, "Circle", "#888888")
+    
+                // Draw Shapes
+                if (Note[2] != undefined) {
+                    drawShape(Canvas.width / 2 + (Note[1] * 140 - 350), ((Time - Note[0]) * 1.75) - (Note[2] * 1.75) + (Canvas.height - 150), 60, 0, "Circle", "#888888")
+                    drawShape(Canvas.width / 2 + (Note[1] * 140 - 410),((Time - Note[0]) * 1.75) - (Note[2] * 1.75) + (Canvas.height - 150) , 120, (Note[2] * 1.75), "Rectangle", "#888888")
+                }
+    
+                // Miss function
+                if (Note[0] - Time < -175) {
+                    spawnJudgement("Miss")
+    
+                    Note[0] = undefined
+                    Note[1] = undefined
+                    Note[2] = undefined
+                    Note[3] = undefined
+    
+                    NotesPassed += 1
+                }
             }
         }
+    
+        var Accuracy = 0
+    
+        RawScore = 0
+        ExpectedRawScore  = 0
+        for (let jud in Judgements) {
+            var Judge = Judgements[jud]
+    
+            RawScore += Judge[0] * Judge[3]
+            ExpectedRawScore += Judge[0] * 20
+        }
+    
+        Accuracy = (RawScore / ExpectedRawScore) * 100 || 100
+    
+        ScoreAnim += (Score - ScoreAnim) / 5
+        AccuracyAnim += (Accuracy - AccuracyAnim) / 5
+        JudgeAnim += (175 - JudgeAnim) / 10
+        ComboAnim += (50 - ComboAnim) / 10
+    
+        drawShape(Canvas.width / 2 - 225, 0, 450, 100, "Rectangle", "#111111")
+        createText(ScoreAnim.toLocaleString(undefined, {maximumFractionDigits: 0}), "right", "#ffffff", Canvas.width - 25, 55, 50)
+        createText(AccuracyAnim.toLocaleString(undefined, {maximumFractionDigits: 3}) + "%", "right", "#ffffff", Canvas.width - 25, 85, 30)
+        createText("(" + RawScore.toLocaleString() + " / " + ExpectedRawScore.toLocaleString() + ")", "right", "#ffffff", Canvas.width - 25, 115, 30)
+    
+        createText(CurrentJudgement, "center", CurJudgementColor, Canvas.width / 2, JudgeAnim, 50)
+        createText("x" + Combo.toLocaleString(undefined, {maximumFractionDigits: 0}), "center", "#ffffff", Canvas.width / 2, 65 + (ComboAnim - 50) / 4, ComboAnim)
+        Time = Music.currentTime * 1000
+        TimeGap = Time - Time2
+        Time2 = Time
+    } else if (Menu == "End") {
+        createText("Score: " + Score.toLocaleString(undefined, {maximumFractionDigits: 0}), "left", "#ffffff", 10, 35, 50)
     }
-
-    var Accuracy = 0
-
-    RawScore = 0
-    ExpectedRawScore  = 0
-    for (let jud in Judgements) {
-        var Judge = Judgements[jud]
-
-        RawScore += Judge[0] * Judge[3]
-        ExpectedRawScore += Judge[0] * 20
-    }
-
-    Accuracy = (RawScore / ExpectedRawScore) * 100 || 100
-
-    ScoreAnim += (Score - ScoreAnim) / 5
-    AccuracyAnim += (Accuracy - AccuracyAnim) / 5
-    JudgeAnim += (175 - JudgeAnim) / 10
-    ComboAnim += (50 - ComboAnim) / 10
-
-    drawShape(Canvas.width / 2 - 225, 0, 450, 100, "Rectangle", "#111111")
-    createText(ScoreAnim.toLocaleString(undefined, {maximumFractionDigits: 0}), "right", "#ffffff", Canvas.width - 25, 55, 50)
-    createText(AccuracyAnim.toLocaleString(undefined, {maximumFractionDigits: 3}) + "%", "right", "#ffffff", Canvas.width - 25, 85, 30)
-    createText("(" + RawScore.toLocaleString() + " / " + ExpectedRawScore.toLocaleString() + ")", "right", "#ffffff", Canvas.width - 25, 115, 30)
-
-    createText(CurrentJudgement, "center", CurJudgementColor, Canvas.width / 2, JudgeAnim, 50)
-    createText("x" + Combo.toLocaleString(undefined, {maximumFractionDigits: 0}), "center", "#ffffff", Canvas.width / 2, 65 + (ComboAnim - 50) / 4, ComboAnim)
-    Time = Music.currentTime * 1000
-    TimeGap = Time - Time2
-    Time2 = Time
 }, 16)
