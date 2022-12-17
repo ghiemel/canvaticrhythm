@@ -26,7 +26,7 @@ var JudgeAnim = 150
 var CurrentJudgement = ""
 var CurJudgementColor = "#000000"
 var Judgements = {
-    Miss: [0, 0, 175, 0, "Miss", "#ff0000"],
+    Miss: [0, 0, 500, 0, "Miss", "#ff0000"],
     Far: [0, 25, 125, 1, "Far", "#ff3300"],
     Off: [0, 50, 95, 5, "Off", "#ff6200"],
     Fine: [0, 100, 70, 10, "Fine", "#00ff00"],
