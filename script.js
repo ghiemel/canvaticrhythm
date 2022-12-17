@@ -1,8 +1,9 @@
 var Canvas = document.getElementById("myCanvas");
 var Context = Canvas.getContext("2d");
+var Song = "Shinsekai"
 
 // Music
-var Music = new Audio("./Sounds/Shinsekai.mp3")
+var Music = new Audio(`./Sounds/${Song}.mp3`)
 Music.playbackRate = 1
 Music.volume = .5
 
@@ -25,12 +26,12 @@ var JudgeAnim = 150
 var CurrentJudgement = ""
 var CurJudgementColor = "#000000"
 var Judgements = {
-    Far: [0, 25, 100, 1, "Far", "#ff3300"],
-    Off: [0, 50, 135, 5, "Off", "#ff6200"],
-    Fine: [0, 100, 90, 10, "Fine", "#00ff00"],
-    Exact: [0, 150, 55, 20, "Exact", "#005eff"],
+    Miss: [0, 0, 150, 0, "Miss", "#ff0000"],
+    Far: [0, 25, 125, 1, "Far", "#ff3300"],
+    Off: [0, 50, 95, 5, "Off", "#ff6200"],
+    Fine: [0, 100, 70, 10, "Fine", "#00ff00"],
+    Exact: [0, 150, 50, 20, "Exact", "#005eff"],
     RExact: [0, 250, 35, 20, "Precise", "#ffff00"],
-    Miss: [0, 0, 0, 0, "Miss", "#ff0000"],
 }
 
 // Charting
@@ -1038,9 +1039,9 @@ var Maps = {
         [89495,2],
         [89547,4,4145],
         [89547,1,4145]    
-    ],
+    ]
 }
-var Chart = Maps.Shinsekai
+var Chart = Maps[Song]
 
 // Functions
 function createText(text, align, color, x, y, size) {
