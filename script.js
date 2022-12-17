@@ -1217,14 +1217,12 @@ document.onkeyup = function(evt) {
 
 setInterval(function() {
     drawShape(0, 0, Canvas.width, Canvas.height, "Rectangle", "#000000")
-    console.log(Menu)
+    Canvas.width = window.innerWidth
+    Canvas.height = window.innerHeight
 
     if (Menu == "Song") {
         var ANotesPassed = Math.max(0, NotesPassed)
 
-        Canvas.width = window.innerWidth
-        Canvas.height = window.innerHeight
-    
         drawShape(Canvas.width, 0, -300, 125, "Triangle", "#888888", "#333333")
         drawShape(Canvas.width / 2 - 325, 0, 650, Canvas.height, "Rectangle", "#222222")
     
