@@ -1216,10 +1216,9 @@ document.onkeyup = function(evt) {
 }
 
 setInterval(function() {
-    drawShape(0, 0, Canvas.width, Canvas.height, "Rectangle", "#000000")
     Canvas.width = window.innerWidth
     Canvas.height = window.innerHeight
-    createText("UOIJODJAOSDJ", "left", "#ffffff", 10, 35, 50)
+    drawShape(0, 0, Canvas.width, Canvas.height, "Rectangle", "#000000")
 
     if (Menu == "Song") {
         var ANotesPassed = Math.max(0, NotesPassed)
@@ -1312,7 +1311,7 @@ setInterval(function() {
         Time = Music.currentTime * 1000
         TimeGap = Time - Time2
         Time2 = Time
-    } else {
+    } else if (Menu == "End") {
         createText("Score: " + Score.toLocaleString(undefined, {maximumFractionDigits: 0}), "left", "#ffffff", 10, 35, 50)
     }
 }, 16)
