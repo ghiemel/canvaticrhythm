@@ -1,7 +1,7 @@
 var Canvas = document.getElementById("myCanvas");
 var Context = Canvas.getContext("2d");
 var Song = "Shinsekai"
-var Menu = "End"
+var Menu = "Song"
 
 // Music
 var Music = new Audio(`./Sounds/${Song}.mp3`)
