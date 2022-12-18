@@ -1,7 +1,7 @@
 var Canvas = document.getElementById("myCanvas");
 var Context = Canvas.getContext("2d");
 var Song = "Shinsekai"
-var Menu = "End"
+var MenuWhere = "End"
 
 // Music
 var Music = new Audio(`./Sounds/${Song}.mp3`)
@@ -1216,7 +1216,7 @@ setInterval(function() {
     Canvas.height = window.innerHeight
     drawShape(0, 0, Canvas.width, Canvas.height, "Rectangle", "#000000")
 
-    if (Menu == "Song") {
+    if (MenuWhere == "Song") {
         var ANotesPassed = Math.max(0, NotesPassed)
         Canvas.width = window.innerWidth
         Canvas.height = window.innerHeight
@@ -1309,8 +1309,8 @@ setInterval(function() {
         Time = Music.currentTime * 1000
         TimeGap = Time - Time2
         Time2 = Time
-    } else if (Menu == "End") {
+    } else if (MenuWhere == "End") {
         createText("Score: " + Score.toLocaleString(undefined, {maximumFractionDigits: 0}), "left", "#ffffff", 10, 50, 50)
     }
-    }
+}
 )
