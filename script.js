@@ -1,7 +1,7 @@
 var Canvas = document.getElementById("myCanvas");
 var Context = Canvas.getContext("2d");
 var Song = "Shinsekai"
-var Menu = "Song"
+var Menu = "End"
 
 // Music
 var Music = new Audio(`./Sounds/${Song}.mp3`)
@@ -27,7 +27,7 @@ var JudgeAnim = 150
 var CurrentJudgement = ""
 var CurJudgementColor = "#000000"
 var Judgements = {
-    Miss: [0, 0, 0, 0, "Miss", "#ff0000"],
+    Miss: [0, 0, 150, 0, "Miss", "#ff0000"],
     Far: [0, 25, 125, 1, "Far", "#ff3300"],
     Off: [0, 50, 95, 5, "Off", "#ff6200"],
     Fine: [0, 100, 70, 10, "Fine", "#00ff00"],
@@ -1124,10 +1124,6 @@ function spawnJudgement(Name, Stats) {
     }
 }
 
-Music.onended = function(evt) {
-   Menu = "End" 
-}
-
 var DownKeys = []
 document.onkeydown = function(evt) {
     event = evt || window.event;
@@ -1222,7 +1218,9 @@ setInterval(function() {
 
     if (Menu == "Song") {
         var ANotesPassed = Math.max(0, NotesPassed)
-
+        Canvas.width = window.innerWidth
+        Canvas.height = window.innerHeight
+    
         drawShape(Canvas.width, 0, -300, 125, "Triangle", "#888888", "#333333")
         drawShape(Canvas.width / 2 - 325, 0, 650, Canvas.height, "Rectangle", "#222222")
     
@@ -1312,6 +1310,7 @@ setInterval(function() {
         TimeGap = Time - Time2
         Time2 = Time
     } else if (Menu == "End") {
-        createText("Score: " + Score.toLocaleString(undefined, {maximumFractionDigits: 0}), "left", "#ffffff", 10, 35, 50)
+        createText("Score: " + Score.toLocaleString(undefined, {maximumFractionDigits: 0}), "left", "#ffffff", 10, 50, 50)
     }
-}, 16)
+    }
+)
