@@ -42,7 +42,7 @@ var Judgements = {
     Off: [0, 50, 95, 5, "Off", "#ff6200"],
     Fine: [0, 100, 70, 10, "Fine", "#00ff00"],
     Exact: [0, 150, 50, 20, "Exact", "#005eff"],
-    RExact: [0, 250, 35, 20, "Precise", "#ffff00"],
+    RExact: [15, 250, 35, 20, "Precise", "#ffff00"],
 }
 
 // Charting
