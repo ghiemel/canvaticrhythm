@@ -40,9 +40,9 @@ var Judgements = {
     Miss: [0, 0, 150, 0, "Miss", "#ff0000"],
     Far: [0, 25, 125, 1, "Far", "#ff3300"],
     Off: [0, 50, 95, 5, "Off", "#ff6200"],
-    Fine: [1, 100, 70, 10, "Fine", "#00ff00"],
+    Fine: [0, 100, 70, 10, "Fine", "#00ff00"],
     Exact: [0, 150, 50, 20, "Exact", "#005eff"],
-    RExact: [95, 250, 35, 20, "Precise", "#ffff00"],
+    RExact: [0, 250, 35, 20, "Precise", "#ffff00"],
 }
 
 // Charting
