@@ -1,27 +1,37 @@
 var Canvas = document.getElementById("myCanvas");
 var Context = Canvas.getContext("2d");
-var Song = "Shinsekai"
-var MenuWhere = "End"
+
+
+// Set canvas size
+Canvas.width = window.innerWidth
+Canvas.height = window.innerHeight
 
 // Music
+var Song = "Shinsekai"
 var Music = new Audio(`./Sounds/${Song}.mp3`)
 Music.playbackRate = 1
 Music.volume = .5
+Music.currentTime = 0
 
-// Gameplay & Settings
+// Settings
 var Keybinds = ["Z", "X", "2", "3"]
 var HoldTicks = 10
+var MenuWhere = "Song"
 
+// Stats
 var Score = 0
 var Combo = 0
-
+var MaxCombo = 0
+var Accuracy = 0
 var RawScore = 0
 var ExpectedRawScore = 0
 
+// Animation
 var ScoreAnim = 0
 var ComboAnim = 50
 var AccuracyAnim = 100
 var JudgeAnim = 150
+var JudgeListAnim = -300
 
 // Judgements
 var CurrentJudgement = ""
@@ -30,9 +40,9 @@ var Judgements = {
     Miss: [0, 0, 150, 0, "Miss", "#ff0000"],
     Far: [0, 25, 125, 1, "Far", "#ff3300"],
     Off: [0, 50, 95, 5, "Off", "#ff6200"],
-    Fine: [0, 100, 70, 10, "Fine", "#00ff00"],
+    Fine: [1, 100, 70, 10, "Fine", "#00ff00"],
     Exact: [0, 150, 50, 20, "Exact", "#005eff"],
-    RExact: [0, 250, 35, 20, "Precise", "#ffff00"],
+    RExact: [95, 250, 35, 20, "Precise", "#ffff00"],
 }
 
 // Charting
@@ -1044,7 +1054,42 @@ var Maps = {
 }
 var Chart = Maps[Song]
 
-// Functions
+// Functions - Notes
+function clearNote(Note) {
+    Note[0] = undefined
+    Note[1] = undefined
+    Note[2] = undefined
+    Note[3] = undefined
+}
+
+function handleHold(Note) {
+    if (Note[2] != undefined) {
+        if (Note[3] != undefined) {
+            var Distance = Math.abs(Time - Note[0])
+            Note[2] -= Distance
+            Note[0] = Time
+            Score += (Combo + 1) * Music.playbackRate
+
+            HoldTicks -= Music.playbackRate
+            if (HoldTicks <= 0) {
+                spawnJudgement("RExact", false)
+                Combo += 1
+                ComboAnim = 85
+
+                HoldTicks += 10
+            }
+
+            if (Note[2] < 0) {
+                spawnJudgement("RExact")
+                clearNote(Note)
+
+                NotesPassed += 1
+            }
+        }
+    }
+}
+
+// Functions - Drawing
 function createText(text, align, color, x, y, size) {
     Context.font = `${size}px "Lucida Sans Unicode"`
     Context.textBaseline = 'center';
@@ -1061,7 +1106,7 @@ function drawShape(x, y, sizex, sizey, shape, color, color2) {
         Context.lineTo(x, y + sizey)
         Context.closePath();
     
-        var grd = Context.createLinearGradient(0, 0, 0, 150);
+        var grd = Context.createLinearGradient(0, 0, 0, sizey);
         grd.addColorStop(0, color);
         grd.addColorStop(1, color2);
     
@@ -1070,7 +1115,7 @@ function drawShape(x, y, sizex, sizey, shape, color, color2) {
     }
 
     function drawRectangle(x, y, sizex, sizey, color, color2) {
-        var grd = Context.createLinearGradient(0, 0, 0, 150);
+        var grd = Context.createLinearGradient(0, 0, 0, sizey);
         grd.addColorStop(0, color);
         grd.addColorStop(1, color2);
 
@@ -1081,12 +1126,8 @@ function drawShape(x, y, sizex, sizey, shape, color, color2) {
     function drawCircle(x, y, size, color, color2) {
         Context.beginPath();
         Context.arc(x, y, size, 0, 2 * Math.PI);
- 
-        var grd = Context.createLinearGradient(0, 0, 0, 150);
-        grd.addColorStop(0, color);
-        grd.addColorStop(1, color2);
 
-        Context.fillStyle = grd;
+        Context.fillStyle = color;
         Context.fill();
     }
 
@@ -1102,6 +1143,7 @@ function drawShape(x, y, sizex, sizey, shape, color, color2) {
     }
 }
 
+// Functions - Timing
 function spawnJudgement(Name, Stats) {
     CurrentJudgement = Judgements[Name][4]
     CurJudgementColor = Judgements[Name][5]   
@@ -1116,7 +1158,7 @@ function spawnJudgement(Name, Stats) {
             ComboAnim = 25
         } else {    
             Combo += 1
-            ComboAnim = 75
+            ComboAnim = 85
     
             var HitAudio = new Audio("./Sounds/hit.wav")
             HitAudio.play()
@@ -1162,9 +1204,7 @@ document.onkeydown = function(evt) {
     
             if (JudI != null) {
                 if (Chart[Target][2] == undefined) {
-                    Chart[Target][0] = undefined
-                    Chart[Target][1] = undefined
-
+                    clearNote(Chart[Target])
                     NotesPassed += 1
                 } else {
                     Chart[Target][3] = "I exist!"
@@ -1199,69 +1239,78 @@ document.onkeyup = function(evt) {
     if (Target != null && TargTime < 150) {
         if (Chart[Target][3] != undefined) {
             Chart[Target][3] = undefined
+
             spawnJudgement("Miss")
-
-            Note[0] = undefined
-            Note[1] = undefined
-            Note[2] = undefined
-            Note[3] = undefined
-
-            NotesPassed += 1
+            clearNote(Note)
         }
     }
 }
 
-setInterval(function() {
-    Canvas.width = window.innerWidth
-    Canvas.height = window.innerHeight
+// Functions - Main
+function clearCanvas() {
+    Context.clearRect(0, 0, Canvas.width, Canvas.height);
+}
+ 
+function drawCanvas() {
+    clearCanvas()
     drawShape(0, 0, Canvas.width, Canvas.height, "Rectangle", "#000000")
 
+    function drawText() {
+        drawShape(Canvas.width / 2 - 225, 0, 450, 100, "Rectangle", "#333333",  "#111111")
+        drawShape(Canvas.width / 2 - 225, 0, -150, 100, "Triangle", "#555555", "#333333")
+        drawShape(Canvas.width / 2 + 225, 0, 150, 100, "Triangle", "#555555", "#333333")
+
+        createText(ScoreAnim.toLocaleString(undefined, {maximumFractionDigits: 0}), "right", "#ffffff", Canvas.width - 25, 55, 50)
+        createText(AccuracyAnim.toFixed(3) + "%", "right", "#ffffff", Canvas.width - 25, 85, 30)
+        createText("(" + RawScore.toLocaleString() + " / " + ExpectedRawScore.toLocaleString() + ")", "right", "#ffffff", Canvas.width - 25, 115, 30)
+
+        createText("x" + Combo.toLocaleString(), "center", "#ffffff", Canvas.width / 2, 65 + (ComboAnim - 50) / 4, ComboAnim)
+        createText("x" + MaxCombo.toLocaleString() + " Max", "left", "#ffffff", Canvas.width / 2 + 245, 65, 50)
+        createText(CurrentJudgement, "center", CurJudgementColor, Canvas.width / 2, JudgeAnim, 50)
+    }
+
+    RawScore = 0
+    ExpectedRawScore  = 0
+
+    var judIndex = 0
+    for (let jud in Judgements) {
+        var Judge = Judgements[jud]
+        RawScore += Judge[0] * Judge[3]
+        ExpectedRawScore += Judge[0] * 20
+        judIndex += 1
+
+        createText(Judge[4] + ": " + (Judge[0]).toLocaleString(), "right", Judge[5], Canvas.width - 15, Canvas.height - (JudgeListAnim + (judIndex * 35)), 35)
+    }
+
+    Accuracy = (RawScore / ExpectedRawScore) * 100 || 100
+    ScoreAnim += (Score - ScoreAnim) / 7.5
+    AccuracyAnim += (Accuracy - AccuracyAnim) / 7.5
+    JudgeAnim += (175 - JudgeAnim) / 10
+    ComboAnim += (65 - ComboAnim) / 10
+
+    MaxCombo = Math.max(Combo, MaxCombo)
+
     if (MenuWhere == "Song") {
-        var ANotesPassed = Math.max(0, NotesPassed)
-        Canvas.width = window.innerWidth
-        Canvas.height = window.innerHeight
-    
+        // Draw UI (Side Stats & ScrollBG)
         drawShape(Canvas.width, 0, -300, 125, "Triangle", "#888888", "#333333")
-        drawShape(Canvas.width / 2 - 325, 0, 650, Canvas.height, "Rectangle", "#222222")
-    
+        drawShape(Canvas.width / 2 - 325, 0, 650, Canvas.height, "Rectangle", "#555555", "#111111")
+
+        // Give functions to Notes & Render Circles
+        var ANotesPassed = Math.max(0, NotesPassed)
+        
         for (var i = 1; i < 5; i++) {
             drawShape(Canvas.width / 2 + (i * 140 - 350), Canvas.height - 150, 60, 0, "Circle", "#ffffff")
         }
     
-        for (let notei = ANotesPassed; notei < ANotesPassed + 150; notei++) {
+        for (let notei = ANotesPassed; notei < ANotesPassed + 75; notei++) {
             if (notei < Chart.length) {
                 // Run functions
                 var Note = Chart[notei]
-                if (Note[2] != undefined) {
-                    if (Note[3] != undefined) {
-                        var Distance = Math.abs(Time - Note[0])
-                        Note[2] -= Distance
-                        Note[0] = Time
-                        Score += (Combo + 1) * Music.playbackRate
-    
-                        HoldTicks -= Music.playbackRate
-                        if (HoldTicks <= 0) {
-                            spawnJudgement("RExact", false)
-                            Combo += 1
-                            ComboAnim = 65
-    
-                            HoldTicks += 10
-                        }
-    
-                        if (Note[2] < 0) {
-                            spawnJudgement("RExact")
-                            Note[0] = undefined
-                            Note[1] = undefined
-                            Note[2] = undefined
-                            Note[3] = undefined
-    
-                            NotesPassed += 1
-                        }
-                    }
-                }
-                drawShape(Canvas.width / 2 + (Note[1] * 140 - 350), ((Time - Note[0]) * 1.75) + (Canvas.height - 150), 60, 0, "Circle", "#888888")
+                handleHold(Note)
     
                 // Draw Shapes
+                drawShape(Canvas.width / 2 + (Note[1] * 140 - 350), ((Time - Note[0]) * 1.75) + (Canvas.height - 150), 60, 0, "Circle", "#888888")
+
                 if (Note[2] != undefined) {
                     drawShape(Canvas.width / 2 + (Note[1] * 140 - 350), ((Time - Note[0]) * 1.75) - (Note[2] * 1.75) + (Canvas.height - 150), 60, 0, "Circle", "#888888")
                     drawShape(Canvas.width / 2 + (Note[1] * 140 - 410),((Time - Note[0]) * 1.75) - (Note[2] * 1.75) + (Canvas.height - 150) , 120, (Note[2] * 1.75), "Rectangle", "#888888")
@@ -1270,47 +1319,31 @@ setInterval(function() {
                 // Miss function
                 if (Note[0] - Time < -175) {
                     spawnJudgement("Miss")
-    
-                    Note[0] = undefined
-                    Note[1] = undefined
-                    Note[2] = undefined
-                    Note[3] = undefined
+                    clearNote(Note)
     
                     NotesPassed += 1
                 }
             }
         }
     
-        var Accuracy = 0
-    
-        RawScore = 0
-        ExpectedRawScore  = 0
-        for (let jud in Judgements) {
-            var Judge = Judgements[jud]
-    
-            RawScore += Judge[0] * Judge[3]
-            ExpectedRawScore += Judge[0] * 20
-        }
-    
-        Accuracy = (RawScore / ExpectedRawScore) * 100 || 100
-    
-        ScoreAnim += (Score - ScoreAnim) / 5
-        AccuracyAnim += (Accuracy - AccuracyAnim) / 5
-        JudgeAnim += (175 - JudgeAnim) / 10
-        ComboAnim += (50 - ComboAnim) / 10
-    
-        drawShape(Canvas.width / 2 - 225, 0, 450, 100, "Rectangle", "#111111")
-        createText(ScoreAnim.toLocaleString(undefined, {maximumFractionDigits: 0}), "right", "#ffffff", Canvas.width - 25, 55, 50)
-        createText(AccuracyAnim.toLocaleString(undefined, {maximumFractionDigits: 3}) + "%", "right", "#ffffff", Canvas.width - 25, 85, 30)
-        createText("(" + RawScore.toLocaleString() + " / " + ExpectedRawScore.toLocaleString() + ")", "right", "#ffffff", Canvas.width - 25, 115, 30)
-    
-        createText(CurrentJudgement, "center", CurJudgementColor, Canvas.width / 2, JudgeAnim, 50)
-        createText("x" + Combo.toLocaleString(undefined, {maximumFractionDigits: 0}), "center", "#ffffff", Canvas.width / 2, 65 + (ComboAnim - 50) / 4, ComboAnim)
+        JudgeListAnim += (550 - JudgeListAnim) / 10
+        drawText()
+
+        // Update song time
         Time = Music.currentTime * 1000
-        TimeGap = Time - Time2
-        Time2 = Time
+
+        if (Music.currentTime >= Music.duration) {
+            MenuWhere = "End"
+
+            ScoreAnim = 0
+            AccuracyAnim = 0
+        }
     } else if (MenuWhere == "End") {
-        createText("Score: " + Score.toLocaleString(undefined, {maximumFractionDigits: 0}), "left", "#ffffff", 10, 50, 50)
+        createText(ScoreAnim.toLocaleString(undefined, {maximumFractionDigits: 0}), "center", "#ffffff", Canvas.width / 2, 165, 125)
+        createText(AccuracyAnim.toFixed(3) + "%", "center", "#ffffff", Canvas.width / 2, 55, 30)
+
+        JudgeListAnim += (0 - JudgeListAnim) / 10
     }
 }
-)
+
+setInterval(drawCanvas, 16)
