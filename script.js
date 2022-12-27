@@ -4943,16 +4943,16 @@ function drawCanvas() {
     
                 // Draw Shapes
                 if (Note[0] != undefined) {
-                    drawShape(Canvas.width / 2 + (Note[1] * 140 - 350) || -1e300, ((Time - Note[0]) * 1.75) + (Canvas.height - 150), 60, 0, 0, "Circle", "#aaaaaa")
-
                     if (Note[2] != undefined) {
-                        drawShape(Canvas.width / 2 + (Note[1] * 140 - 350), ((Time - Note[0]) * 1.75) - (Note[2] * 1.75) + (Canvas.height - 150), 60, 0, 0, "Circle", "#888888")
-                        drawShape(Canvas.width / 2 + (Note[1] * 140 - 410),((Time - Note[0]) * 1.75) - (Note[2] * 1.75) + (Canvas.height - 150) , 120, (Note[2] * 1.75), 0, "Rectangle", "#888888")
+                        drawShape(Canvas.width / 2 + (Note[1] * 140 - 410),((Time - Note[0]) * 1.75) - (Note[2] * 1.75) + (Canvas.height - 150) , 120, (Note[2] * 1.75), 0, "Rectangle", "#002aa9")
+                        drawShape(Canvas.width / 2 + (Note[1] * 140 - 350), ((Time - Note[0]) * 1.75) - (Note[2] * 1.75) + (Canvas.height - 150), 60, 0, 0, "Circle", "#0066ff")
                     }
+                    
+                    drawShape(Canvas.width / 2 + (Note[1] * 140 - 350) || -1e300, ((Time - Note[0]) * 1.75) + (Canvas.height - 150), 60, 0, 0, "Circle", "#0066ff")
                 }
     
                 // Miss function
-                if (Note[0] - Time < 16.7 && true) {
+                if (Note[0] - Time < 16.7 && false) {
                     if (Note[2] == undefined) {
                         spawnJudgement("RExact", true, Note[0] - Time)
                         clearNote(Note)
