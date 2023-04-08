@@ -26,7 +26,7 @@ Music.volume = .5;
 Music.currentTime = 0;
 
 // Settings
-var Keybinds = ["Z", "X", "2", "3"];
+var Keybinds = ["Z", "X", ".", "/"];
 var Menu = "Select";
 var Offset = -45;
 
